@@ -68,7 +68,7 @@ export class PprotoConnection {
     timeout?: number
   ): Promise<R> {
     return new Promise((resolve, reject) => {
-      const maxTimeLife =
+      const max_time_life =
         timeout !== undefined
           ? Math.round(new Date().getTime() / 1000 + timeout)
           : undefined;
@@ -77,13 +77,13 @@ export class PprotoConnection {
         id: uuid(),
         command,
         content,
-        webFlags: {
+        web_flags: {
           type: "command",
-          execStatus: "unknown",
+          exec_status: "unknown",
           priority: "normal",
-          contentFormat: "json",
+          content_format: "json",
         },
-        maxTimeLife,
+        max_time_life,
         tags: [],
       };
       this.ws.send(JSON.stringify(message));
@@ -141,12 +141,12 @@ export class PprotoConnection {
   private onMessage(event: MessageEvent) {
     const message: ProtocolMessage = JSON.parse(event.data);
 
-    switch (message.webFlags.type) {
+    switch (message.web_flags.type) {
       case "answer": {
         const command = this.commands[message.id];
         delete this.commands[message.id];
 
-        switch (message.webFlags.execStatus) {
+        switch (message.web_flags.exec_status) {
           case "success": {
             command?.resolve(message.content);
             break;
@@ -222,13 +222,13 @@ export interface ProtocolMessage {
   id: string;
   command: string;
   content: any;
-  webFlags: {
+  web_flags: {
     type: "command" | "answer" | "event";
-    execStatus: "unknown" | "success" | "failed" | "error";
+    exec_status: "unknown" | "success" | "failed" | "error";
     priority: "normal";
-    contentFormat: "json";
+    content_format: "json";
   };
-  maxTimeLife?: number;
+  max_time_life?: number;
   tags: number[];
 }
 
